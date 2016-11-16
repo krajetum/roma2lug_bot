@@ -12,6 +12,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.StringUtils;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.calendar.Calendar;
+import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.*;
@@ -46,7 +48,7 @@ public class AssistanceCore {
      * If modifying these scopes, delete your previously saved credentials
      * at ~/.credentials/gmail-java-quickstart
      */
-    private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY);
+    private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY, CalendarScopes.CALENDAR);
     public AssistanceCore(TelegramBot bot){
         this.telegramBot = bot;
     }
@@ -92,11 +94,22 @@ public class AssistanceCore {
         return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
     }
 
+    /**
+     * Build and return an authorized Calendar client service.
+     * @return an authorized Calendar client service
+     * @throws IOException
+     */
+    public static Calendar getCalendarService() throws IOException {
+        Credential credential = authorize();
+        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
+    }
 
     public void checkMail() throws IOException {
         // Build a new authorized API client service.
         Gmail service = getGmailService();
+        Calendar calendar = getCalendarService();
 
+        
         // Print the labels in the user's account.
         //String user = "me";
         ListMessagesResponse response = service.users().messages().list("me").setIncludeSpamTrash(false).setQ("in:unread").execute();
