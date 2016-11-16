@@ -9,7 +9,7 @@ import pro.zackpollard.telegrambot.api.chat.message.send.SendableTextMessage;
 import pro.zackpollard.telegrambot.api.event.Listener;
 import pro.zackpollard.telegrambot.api.event.chat.ParticipantJoinGroupChatEvent;
 import pro.zackpollard.telegrambot.api.event.chat.message.CommandMessageReceivedEvent;
-import pro.zackpollard.telegrambot.api.menu.InlineMenu;
+
 
 
 public class Roma2LugCore implements Listener {
@@ -45,10 +45,6 @@ public class Roma2LugCore implements Listener {
         if(event.getCommand().equals("whoami")){
             SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message(event.getMessage().getSender().getId()+""+event.getMessage().getSender().getFullName() ).build();
             event.getChat().sendMessage(sendableTextMessage);
-        }
-
-        if(event.getCommand().equals("commandtest")){
-            InlineMenu.builder(telegramBot).forWhom(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_ID));
         }
     }
 }
