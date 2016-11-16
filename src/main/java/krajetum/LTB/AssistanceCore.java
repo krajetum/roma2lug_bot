@@ -109,7 +109,7 @@ public class AssistanceCore {
         Gmail service = getGmailService();
         Calendar calendar = getCalendarService();
 
-        
+
         // Print the labels in the user's account.
         //String user = "me";
         ListMessagesResponse response = service.users().messages().list("me").setIncludeSpamTrash(false).setQ("in:unread").execute();

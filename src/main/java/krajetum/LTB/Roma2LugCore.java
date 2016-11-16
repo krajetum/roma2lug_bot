@@ -43,7 +43,7 @@ public class Roma2LugCore implements Listener {
     @Override
     public void onCommandMessageReceived(CommandMessageReceivedEvent event) {
         if(event.getCommand().equals("whoami")){
-            SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message(event.getMessage().getSender().getId()+""+event.getMessage().getSender().getFullName() ).build();
+            SendableTextMessage sendableTextMessage = (SendableTextMessage.builder().message("Name: *" + event.getMessage().getSender().getFullName()+"*")).parseMode(ParseMode.MARKDOWN).build();
             event.getChat().sendMessage(sendableTextMessage);
         }
     }
