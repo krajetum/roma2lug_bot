@@ -19,8 +19,10 @@ import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.*;
 import java.io.ByteArrayInputStream;
 import krajetum.LTB.configs.BotConfig;
+import krajetum.LTB.utils.MailHTMLParser;
 import krajetum.LTB.utils.TelegramAssistanceUtil;
 import pro.zackpollard.telegrambot.api.TelegramBot;
+import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,11 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Properties;
 
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
 
 public class AssistanceCore {
 
@@ -156,17 +154,21 @@ public class AssistanceCore {
                     
                     util.setDate(map.get("Date"));
                     StringBuilder builder = new StringBuilder();
-                    if(part.getMimeType().equals("multipart/alternative"))
-                        for(MessagePart parts: part.getParts()){
-                            if(parts.getMimeType().equals("text/plain"))
-                                builder.append("Text/plain: ").append(parts.getBody().getData());
-                            if(parts.getMimeType().equals("text/html"))
-                                builder.append("Text/html: ").append(StringUtils.newStringUtf8(Base64.decodeBase64(parts.getBody().getData())));
+
+                    if(part.getMimeType().equals("multipart/alternative")) {
+                        for (MessagePart parts : part.getParts()) {
+                            /*if (parts.getMimeType().equals("text/plain"))
+                                builder.append("Text/plain: ").append(parts.getBody().getData());*/
+                            if (parts.getMimeType().equals("text/html"))
+                                builder.append(MailHTMLParser.PolishMAIL(StringUtils.newStringUtf8(Base64.decodeBase64(parts.getBody().getData()))));
                         }
-                            
+                    }else if(part.getMimeType().equals("text/plain")){
+                        builder.append(StringUtils.newStringUtf8(Base64.decodeBase64(part.getBody().getData())));
+                    }
+
                     util.setBody(builder.toString());
-                    telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_TEST_ID), util.toTelegramMessage());
-                    Logger.getLogger(AssistanceCore.class.getName()).log(Level.INFO, part.toPrettyString());
+                    telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_TEST_ID), util.toTelegramMessage(ParseMode.MARKDOWN));
+                    //Logger.getLogger(AssistanceCore.class.getName()).log(Level.INFO, part.toPrettyString());
                     
                     
                     ModifyMessageRequest request = new ModifyMessageRequest();

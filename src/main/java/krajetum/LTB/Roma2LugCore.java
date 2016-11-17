@@ -53,6 +53,12 @@ public class Roma2LugCore implements Listener {
         }else if(event.getCommand().equals("kappa")){
             SendableStickerMessage stickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir")+"/stickers/kappa.png"))).build();
             event.getChat().sendMessage(stickerMessage);
+        }else if(event.getCommand().equals("blaster")){
+            SendableStickerMessage stickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir")+"/stickers/blaster.webp"))).build();
+            event.getChat().sendMessage(stickerMessage);
+        }else if(event.getCommand().equals("chatid")){
+            SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message(event.getChat().getId()).build();
+            event.getChat().sendMessage(sendableTextMessage);
         }
     }
 }

@@ -45,14 +45,14 @@ public class TelegramAssistanceUtil {
         this.body = body;
     }
 
-    public SendableTextMessage toTelegramMessage(){
+    public SendableTextMessage toTelegramMessage(ParseMode parseMode){
         StringBuilder builder = new StringBuilder();
         builder.append("*Data:* ").append(getDate()).append("\n");
         builder.append("*From:* ").append(getFrom()).append("\n");
         builder.append("*Subject:* ").append(getSubject()).append("\n");
         builder.append("*BODY:* \n").append(getBody());
 
-        return SendableTextMessage.builder().message(builder.toString()).parseMode(ParseMode.MARKDOWN).build();
+        return SendableTextMessage.builder().message(builder.toString()).parseMode(parseMode).build();
     }
 
 }
