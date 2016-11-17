@@ -36,7 +36,7 @@ public class Roma2LugCore implements Listener {
         event.getChat().sendMessage(welcomeMessage);
         /**TODO: cercare di inviare un cavolo di sticker*/
         
-        SendableStickerMessage sendableStickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir")+"/linux_inside.png"))).build();
+        SendableStickerMessage sendableStickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir")+"/stickers/linux_inside.png"))).build();
         event.getChat().sendMessage(sendableStickerMessage);
         
 
@@ -47,10 +47,12 @@ public class Roma2LugCore implements Listener {
         if(event.getCommand().equals("whoami")){
             SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message("Name: *" + event.getMessage().getSender().getFullName()+"*").parseMode(ParseMode.MARKDOWN).build();
             event.getChat().sendMessage(sendableTextMessage);
-        }
-        if(event.getCommand().equals("k")){
+        }else if(event.getCommand().equals("k")){
             SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message("K").parseMode(ParseMode.MARKDOWN).build();
             event.getChat().sendMessage(sendableTextMessage);
+        }else if(event.getCommand().equals("kappa")){
+            SendableStickerMessage stickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir")+"/stickers/kappa.png"))).build();
+            event.getChat().sendMessage(stickerMessage);
         }
     }
 }
