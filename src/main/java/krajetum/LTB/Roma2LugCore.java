@@ -1,10 +1,13 @@
 package krajetum.LTB;
 
 
-import krajetum.LTB.configs.BotConfig;
+import java.io.File;
+
 import pro.zackpollard.telegrambot.api.TelegramBot;
+import pro.zackpollard.telegrambot.api.chat.message.send.InputFile;
 import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
-import pro.zackpollard.telegrambot.api.chat.message.send.SendableChatAction;
+
+import pro.zackpollard.telegrambot.api.chat.message.send.SendableStickerMessage;
 import pro.zackpollard.telegrambot.api.chat.message.send.SendableTextMessage;
 import pro.zackpollard.telegrambot.api.event.Listener;
 import pro.zackpollard.telegrambot.api.event.chat.ParticipantJoinGroupChatEvent;
@@ -22,6 +25,7 @@ public class Roma2LugCore implements Listener {
         this.telegramBot = telegramBot;
     }
 
+    @Override
     public void onParticipantJoinGroupChat(ParticipantJoinGroupChatEvent event) {
 
         SendableTextMessage welcomeMessage = SendableTextMessage.builder()
@@ -31,19 +35,21 @@ public class Roma2LugCore implements Listener {
 
         event.getChat().sendMessage(welcomeMessage);
         /**TODO: cercare di inviare un cavolo di sticker*/
-      /*  try {
-            SendableStickerMessage sendableStickerMessage = SendableStickerMessage.builder().sticker(new InputFile(Roma2LugCore.class.getResource("/linux_inside.png").toURI().toURL())).build();
-            event.getChat().sendMessage(sendableStickerMessage);
-        } catch (URISyntaxException | MalformedURLException e) {
-            e.printStackTrace();
-        }*/
+        
+        SendableStickerMessage sendableStickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir")+"/linux_inside.png"))).build();
+        event.getChat().sendMessage(sendableStickerMessage);
+        
 
     }
 
     @Override
     public void onCommandMessageReceived(CommandMessageReceivedEvent event) {
         if(event.getCommand().equals("whoami")){
-            SendableTextMessage sendableTextMessage = (SendableTextMessage.builder().message("Name: *" + event.getMessage().getSender().getFullName()+"*")).parseMode(ParseMode.MARKDOWN).build();
+            SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message("Name: *" + event.getMessage().getSender().getFullName()+"*").parseMode(ParseMode.MARKDOWN).build();
+            event.getChat().sendMessage(sendableTextMessage);
+        }
+        if(event.getCommand().equals("k")){
+            SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message("K").parseMode(ParseMode.MARKDOWN).build();
             event.getChat().sendMessage(sendableTextMessage);
         }
     }

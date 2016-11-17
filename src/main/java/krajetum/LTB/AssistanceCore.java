@@ -142,6 +142,9 @@ public class AssistanceCore {
                     TelegramAssistanceUtil util = new TelegramAssistanceUtil();
                     util.setSubject(map.get("Subject"));
                     util.setFrom(map.get("From"));
+                    
+                    
+                    
                     util.setDate(map.get("Date"));
                     util.setBody(StringUtils.newStringUtf8(Base64.decodeBase64(part.getBody().getData())));
                     telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_ID), util.toTelegramMessage());
@@ -156,18 +159,28 @@ public class AssistanceCore {
 
     }
     public synchronized void runDaemon(){
-        //noinspection InfiniteLoopStatement
+        
+        boolean once = false;
+        //noinspection InfEiniteLoopStatement
         while(true) {
+            
             try {
                 checkMail();
                 //60000 1 min
                 //600000 10 min
                 //636000 15 min
                 /*TODO: DA DECIDERE IL REFRESH RATE */
+                if(!once){
+                    System.out.println("Daemon Initialization finished");
+                    System.out.println("Bot Init ended");
+                    once = true;
+                }
                 wait(60000);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
+  
+            
         }
     }
 }
