@@ -10,6 +10,9 @@ public class MailHTMLParser {
 
     public static String PolishMAIL(String mailText){
         StringBuilder result = new StringBuilder();
+
+
+
         boolean tag = false;
         int beginIndex =0;
         int endIndex =0;
