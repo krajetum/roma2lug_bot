@@ -17,6 +17,7 @@ import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.*;
+import java.io.ByteArrayInputStream;
 import krajetum.LTB.configs.BotConfig;
 import krajetum.LTB.utils.TelegramAssistanceUtil;
 import pro.zackpollard.telegrambot.api.TelegramBot;
@@ -24,10 +25,18 @@ import pro.zackpollard.telegrambot.api.TelegramBot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.Properties;
+
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 
 public class AssistanceCore {
 
@@ -104,7 +113,7 @@ public class AssistanceCore {
         return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
     }
 
-    public void checkMail() throws IOException {
+    public void checkMail() throws IOException{
         // Build a new authorized API client service.
         Gmail service = getGmailService();
         Calendar calendar = getCalendarService();
@@ -146,8 +155,20 @@ public class AssistanceCore {
                     
                     
                     util.setDate(map.get("Date"));
-                    util.setBody(StringUtils.newStringUtf8(Base64.decodeBase64(part.getBody().getData())));
-                    telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_ID), util.toTelegramMessage());
+                    StringBuilder builder = new StringBuilder();
+                    if(part.getMimeType().equals("multipart/alternative"))
+                        for(MessagePart parts: part.getParts()){
+                            if(parts.getMimeType().equals("text/plain"))
+                                builder.append("Text/plain: ").append(parts.getBody().getData());
+                            if(parts.getMimeType().equals("text/html"))
+                                builder.append("Text/html: ").append(StringUtils.newStringUtf8(Base64.decodeBase64(parts.getBody().getData())));
+                        }
+                            
+                    util.setBody(builder.toString());
+                    telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_TEST_ID), util.toTelegramMessage());
+                    Logger.getLogger(AssistanceCore.class.getName()).log(Level.INFO, part.toPrettyString());
+                    
+                    
                     ModifyMessageRequest request = new ModifyMessageRequest();
                     request.setRemoveLabelIds(Arrays.asList("UNREAD"));
                     service.users().messages().modify("me", op.getId(), request).execute();
@@ -158,7 +179,7 @@ public class AssistanceCore {
             }
 
     }
-    public synchronized void runDaemon(){
+    public synchronized void runDaemon() {
         
         boolean once = false;
         //noinspection InfEiniteLoopStatement
@@ -175,9 +196,13 @@ public class AssistanceCore {
                     System.out.println("Bot Init ended");
                     once = true;
                 }
-                wait(60000);
-            } catch (IOException | InterruptedException e) {
+                wait(6000);
+            } catch (InterruptedException e){
                 e.printStackTrace();
+            }catch (UnknownHostException e ) {
+                Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Host non raggiungible", e);
+            } catch (IOException ex) {
+                Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Connessione Saltata. Stacca, Stacca ci Stanno tracciando", ex);
             }
   
             
