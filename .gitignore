@@ -16,5 +16,7 @@ hs_err_pid*
 .gitignore
 .idea/workspace.xml
 src/main/resources/client_id.json
-src/test/
+data/lug_members.json
 target/
+src/main/resources/
+tmp/

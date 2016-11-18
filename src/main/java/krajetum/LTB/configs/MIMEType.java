@@ -5,6 +5,6 @@ public class MIMEType {
     public static final String HTML = "text/html";
     public static final String MULTIPART_ALTERNATIVE = "multipart/alternative";
     public static final String MULTIPART_RELATED = "multipart/related";
-    public static final String JPEG = "image/jpg";
+    public static final String JPEG = "image/jpeg";
 
 }

@@ -164,7 +164,7 @@ public class AssistanceCore {
                         builder.append(StringUtils.newStringUtf8(Base64.decodeBase64(part.getBody().getData())));
                     }else if(part.getMimeType().equals(MIMEType.MULTIPART_RELATED)){
                         for (MessagePart parts : part.getParts()) {
-                            System.out.println(parts.toPrettyString());
+
                             if (parts.getMimeType().equals(MIMEType.MULTIPART_ALTERNATIVE)){
                                 for (MessagePart nested : parts.getParts()) {
                                     if (nested.getMimeType().equals(MIMEType.HTML))
@@ -172,8 +172,10 @@ public class AssistanceCore {
                                 }
                             }
                             if (parts.getMimeType().equals(MIMEType.JPEG)){
-                                MessagePartBody attachPart = service.users().messages().attachments().get("me", message.getId(), parts.getBody().getAttachmentId()).execute();
+                                System.out.println(parts.getFilename());
+                                builder.append("image: ").append(parts.getFilename().replaceAll("_","-"));
 
+                                MessagePartBody attachPart = service.users().messages().attachments().get("me", message.getId(), parts.getBody().getAttachmentId()).execute();
                                 byte[] fileByteArray = Base64.decodeBase64(attachPart.getData());
                                 String string = System.getProperty("user.dir")+"/tmp/"+UUID.randomUUID();
                                 tmpStrings.add(string);
