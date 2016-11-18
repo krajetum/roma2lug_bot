@@ -21,6 +21,7 @@ import com.google.api.services.gmail.model.*;
 import java.io.*;
 
 import krajetum.LTB.configs.BotConfig;
+import krajetum.LTB.configs.MIMEType;
 import krajetum.LTB.utils.MailHTMLParser;
 import krajetum.LTB.utils.TelegramAssistanceUtil;
 import org.apache.commons.io.FileUtils;
@@ -154,25 +155,23 @@ public class AssistanceCore {
                     StringBuilder builder = new StringBuilder();
                     List<String> tmpStrings = new ArrayList<>();
                     System.out.println(part.getMimeType());
-                    if(part.getMimeType().equals("multipart/alternative")) {
+                    if(part.getMimeType().equals(MIMEType.MULTIPART_ALTERNATIVE)) {
                         for (MessagePart parts : part.getParts()) {
-                            if (parts.getMimeType().equals("text/html"))
+                            if (parts.getMimeType().equals(MIMEType.HTML))
                                 builder.append(MailHTMLParser.PolishMAIL(StringUtils.newStringUtf8(Base64.decodeBase64(parts.getBody().getData()))));
                         }
-                    }else if(part.getMimeType().equals("text/plain")){
+                    }else if(part.getMimeType().equals(MIMEType.PLAIN)){
                         builder.append(StringUtils.newStringUtf8(Base64.decodeBase64(part.getBody().getData())));
-                    }else if(part.getMimeType().equals("multipart/related")){
+                    }else if(part.getMimeType().equals(MIMEType.MULTIPART_RELATED)){
                         for (MessagePart parts : part.getParts()) {
                             System.out.println(parts.toPrettyString());
-                            if (parts.getMimeType().equals("multipart/alternative")){
+                            if (parts.getMimeType().equals(MIMEType.MULTIPART_ALTERNATIVE)){
                                 for (MessagePart nested : parts.getParts()) {
-                                    if (nested.getMimeType().equals("text/html"))
+                                    if (nested.getMimeType().equals(MIMEType.HTML))
                                         builder.append(MailHTMLParser.PolishMAIL(StringUtils.newStringUtf8(Base64.decodeBase64(nested.getBody().getData()))));
                                 }
                             }
-
-                            if (parts.getMimeType().equals("image/jpeg")){
-
+                            if (parts.getMimeType().equals(MIMEType.JPEG)){
                                 MessagePartBody attachPart = service.users().messages().attachments().get("me", message.getId(), parts.getBody().getAttachmentId()).execute();
 
                                 byte[] fileByteArray = Base64.decodeBase64(attachPart.getData());
