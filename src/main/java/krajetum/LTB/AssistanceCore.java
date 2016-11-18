@@ -17,21 +17,20 @@ import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.*;
-import java.io.ByteArrayInputStream;
+
+import java.io.*;
+
 import krajetum.LTB.configs.BotConfig;
 import krajetum.LTB.utils.MailHTMLParser;
 import krajetum.LTB.utils.TelegramAssistanceUtil;
+import org.apache.commons.io.FileUtils;
 import pro.zackpollard.telegrambot.api.TelegramBot;
+import pro.zackpollard.telegrambot.api.chat.message.send.InputFile;
 import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
+import pro.zackpollard.telegrambot.api.chat.message.send.SendableStickerMessage;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -123,9 +122,8 @@ public class AssistanceCore {
 
         if(response.getResultSizeEstimate()>0)
             for(Message message : response.getMessages()){
-
                 Message op = service.users().messages().get("me", message.getId()).setFormat("full").execute();
-                //System.out.println("----- --- ---- - -- - -- - -- - Message ID:"+op.getId()+" -- ----- ---- ---- - -- - --");
+
 
                 MessagePart part = op.getPayload();
                 List<MessagePartHeader> headers =  part.getHeaders();
@@ -154,22 +152,47 @@ public class AssistanceCore {
                     
                     util.setDate(map.get("Date"));
                     StringBuilder builder = new StringBuilder();
-
+                    List<String> tmpStrings = new ArrayList<>();
+                    System.out.println(part.getMimeType());
                     if(part.getMimeType().equals("multipart/alternative")) {
                         for (MessagePart parts : part.getParts()) {
-                            /*if (parts.getMimeType().equals("text/plain"))
-                                builder.append("Text/plain: ").append(parts.getBody().getData());*/
                             if (parts.getMimeType().equals("text/html"))
                                 builder.append(MailHTMLParser.PolishMAIL(StringUtils.newStringUtf8(Base64.decodeBase64(parts.getBody().getData()))));
                         }
                     }else if(part.getMimeType().equals("text/plain")){
                         builder.append(StringUtils.newStringUtf8(Base64.decodeBase64(part.getBody().getData())));
-                    }
+                    }else if(part.getMimeType().equals("multipart/related")){
+                        for (MessagePart parts : part.getParts()) {
+                            System.out.println(parts.toPrettyString());
+                            if (parts.getMimeType().equals("multipart/alternative")){
+                                for (MessagePart nested : parts.getParts()) {
+                                    if (nested.getMimeType().equals("text/html"))
+                                        builder.append(MailHTMLParser.PolishMAIL(StringUtils.newStringUtf8(Base64.decodeBase64(nested.getBody().getData()))));
+                                }
+                            }
 
+                            if (parts.getMimeType().equals("image/jpeg")){
+
+                                MessagePartBody attachPart = service.users().messages().attachments().get("me", message.getId(), parts.getBody().getAttachmentId()).execute();
+
+                                byte[] fileByteArray = Base64.decodeBase64(attachPart.getData());
+                                String string = System.getProperty("user.dir")+"/tmp/"+UUID.randomUUID();
+                                tmpStrings.add(string);
+                                FileUtils.writeByteArrayToFile(new File(string),fileByteArray);
+                            }
+                        }
+                    }
                     util.setBody(builder.toString());
                     telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_TEST_ID), util.toTelegramMessage(ParseMode.MARKDOWN));
                     //Logger.getLogger(AssistanceCore.class.getName()).log(Level.INFO, part.toPrettyString());
-                    
+                    if(tmpStrings.size()>0){
+                        for(int i =0; i<tmpStrings.size();i++) {
+                            SendableStickerMessage sendableStickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(tmpStrings.get(i)))).build();
+                            telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_TEST_ID), sendableStickerMessage);
+                            File file = new File(tmpStrings.get(i));
+                            file.delete();
+                        }
+                    }
                     
                     ModifyMessageRequest request = new ModifyMessageRequest();
                     request.setRemoveLabelIds(Arrays.asList("UNREAD"));

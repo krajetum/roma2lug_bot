@@ -67,6 +67,9 @@ public class Roma2LugCore implements Listener {
         }else if(event.getCommand().equals("gengiskhan")) {
             SendableStickerMessage stickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir") + "/stickers/genghis-khan.jpg"))).build();
             event.getChat().sendMessage(stickerMessage);
+        }else if(event.getCommand().equals("feelsadman")) {
+            SendableStickerMessage stickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir") + "/stickers/feelsadman.jpg"))).build();
+            event.getChat().sendMessage(stickerMessage);
         }else if(event.getCommand().equals("quarantennetriste")){
             File file = new File(System.getProperty("user.dir")+"/stickers/quarantennitristi");
             //noinspection ConstantConditions
