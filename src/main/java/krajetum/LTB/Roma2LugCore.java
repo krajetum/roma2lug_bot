@@ -114,6 +114,8 @@ public class Roma2LugCore implements Listener {
                 builder.append("gengiskhan - ").append("Gengiskan (more info @Twiiiiin)").append("\n");
                 builder.append("feelsbadman - ").append("feelsbadman").append("\n");
                 builder.append("quarantennetriste - ").append("40s lottery").append("\n");
+                builder.append("cetriolotime - ").append("cetriolo per i membri attivi").append("\n");
+
                 SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message(builder.toString()).build();
                 event.getChat().sendMessage(sendableTextMessage);
             }
@@ -125,7 +127,6 @@ public class Roma2LugCore implements Listener {
                 Type listType = new TypeToken<ArrayList<LUGMember>>(){}.getType();
                 List<LUGMember> memeMembers= gson.fromJson(new JsonReader(new FileReader(file)), listType);
                 int rand = ThreadLocalRandom.current().nextInt(0, memeMembers.size());
-                System.out.println("rand num " + rand);
 
                 SendableTextMessage textMessage = SendableTextMessage.builder().message("Cetriolo a: " + memeMembers.get(rand).getName() + " ! Congratulazioni!").build();
                 event.getChat().sendMessage(textMessage);

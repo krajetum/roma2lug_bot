@@ -20,13 +20,11 @@ public class BotConfig {
         try {
             properties.load(new FileInputStream(new File(System.getProperty("user.dir")+"/config/properties.properties")));
             BOT_TOKEN = properties.getProperty("TOKEN");
-            BOT_LUG_GROUP_TEST_ID = Long.getLong(properties.getProperty("LUG_TEST_ID"));
-            BOT_LUG_GROUP_ID = Long.getLong(properties.getProperty("LUG_ID"));
+            BOT_LUG_GROUP_TEST_ID = Long.parseLong(properties.getProperty("LUG_TEST_ID"));
+            BOT_LUG_GROUP_ID = Long.parseLong(properties.getProperty("LUG_ID"));
             BOT_USERNAME = properties.getProperty("USERNAME");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
