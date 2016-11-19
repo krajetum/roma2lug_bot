@@ -20,3 +20,4 @@ data/lug_members.json
 target/
 src/main/resources/
 tmp/
+/config/properties.properties
