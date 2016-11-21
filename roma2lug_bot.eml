@@ -7,7 +7,6 @@
 	</contentEntry>
 	<levels>
 		<level name="Maven: pro.zackpollard.telegrambot.api:jtelegram-botapi:1.4.2" value="project"/>
-		<level name="Maven: com.google.code.gson:gson:2.7" value="project"/>
 		<level name="Maven: org.json:json:20160212" value="project"/>
 		<level name="Maven: com.mashape.unirest:unirest-java:1.4.9" value="project"/>
 		<level name="Maven: org.apache.httpcomponents:httpclient:4.5.2" value="project"/>
@@ -30,6 +29,8 @@
 		<level name="Maven: org.mortbay.jetty:jetty-util:6.1.26" value="project"/>
 		<level name="Maven: org.mortbay.jetty:servlet-api:2.5-20081211" value="project"/>
 		<level name="Maven: com.google.apis:google-api-services-gmail:v1-rev50-1.22.0" value="project"/>
+		<level name="Maven: com.google.apis:google-api-services-calendar:v3-rev225-1.22.0" value="project"/>
 		<level name="Maven: commons-io:commons-io:2.4" value="project"/>
+		<level name="Maven: com.google.code.gson:gson:2.8.0" value="project"/>
 	</levels>
 </component>

@@ -30,6 +30,7 @@ import pro.zackpollard.telegrambot.api.chat.message.send.InputFile;
 import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
 import pro.zackpollard.telegrambot.api.chat.message.send.SendableStickerMessage;
 
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.Level;
@@ -148,10 +149,8 @@ public class AssistanceCore {
                     TelegramAssistanceUtil util = new TelegramAssistanceUtil();
                     util.setSubject(map.get("Subject"));
                     util.setFrom(map.get("From"));
-                    
-                    
-                    
                     util.setDate(map.get("Date"));
+
                     StringBuilder builder = new StringBuilder();
                     List<String> tmpStrings = new ArrayList<>();
                     System.out.println(part.getMimeType());
@@ -164,7 +163,6 @@ public class AssistanceCore {
                         builder.append(StringUtils.newStringUtf8(Base64.decodeBase64(part.getBody().getData())));
                     }else if(part.getMimeType().equals(MIMEType.MULTIPART_RELATED)){
                         for (MessagePart parts : part.getParts()) {
-
                             if (parts.getMimeType().equals(MIMEType.MULTIPART_ALTERNATIVE)){
                                 for (MessagePart nested : parts.getParts()) {
                                     if (nested.getMimeType().equals(MIMEType.HTML))
@@ -174,7 +172,6 @@ public class AssistanceCore {
                             if (parts.getMimeType().equals(MIMEType.JPEG)){
                                 System.out.println(parts.getFilename());
                                 builder.append("image: ").append(parts.getFilename().replaceAll("_","-"));
-
                                 MessagePartBody attachPart = service.users().messages().attachments().get("me", message.getId(), parts.getBody().getAttachmentId()).execute();
                                 byte[] fileByteArray = Base64.decodeBase64(attachPart.getData());
                                 String string = System.getProperty("user.dir")+"/tmp/"+UUID.randomUUID();
@@ -184,6 +181,8 @@ public class AssistanceCore {
                         }
                     }
                     util.setBody(builder.toString());
+
+
                     telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_TEST_ID), util.toTelegramMessage(ParseMode.MARKDOWN));
                     //Logger.getLogger(AssistanceCore.class.getName()).log(Level.INFO, part.toPrettyString());
                     if(tmpStrings.size()>0){
@@ -222,13 +221,15 @@ public class AssistanceCore {
                     System.out.println("Bot Init ended");
                     once = true;
                 }
-                wait(6000);
+                wait(60000);
             } catch (InterruptedException e){
                 e.printStackTrace();
             }catch (UnknownHostException e ) {
-                Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Host non raggiungible", e);
+                Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Host non raggiungible");
+            }catch (SocketTimeoutException e){
+                Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Connection Timeout");
             } catch (IOException ex) {
-                Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Connessione Saltata. Stacca, Stacca ci Stanno tracciando", ex);
+                Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Connessione Saltata. Stacca, Stacca ci Stanno tracciando");
             }
   
             

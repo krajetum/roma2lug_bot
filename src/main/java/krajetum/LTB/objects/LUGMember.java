@@ -1,4 +1,4 @@
-package krajetum.LTB.utils;
+package krajetum.LTB.objects;
 
 /**
  * Created by Lorenzo on 18/11/2016.
