@@ -16,8 +16,7 @@ There are some missing files that you shall provide to this code to work.
   This file contains 4 properties:
     - **USERNAME**: the name of the bot (currently not used)
     - **TOKEN**: the token to access the telegram bot api
-    - **LUG_TEST_ID**: the id of the the test chat (currently the main) 
-    - **LUG_ID**: the id of the main chat (currently not used)
+    - **LUG_ID**: the id of the main chat
     
 - ### lug_members.json
   
