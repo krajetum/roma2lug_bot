@@ -9,6 +9,20 @@
     <properties>
         <jdk.version>1.8</jdk.version>
     </properties>
+    <developers>
+        <developer>
+            <name>Lorenzo Licalzi</name>
+            <email>krajetum@gmail.com</email>
+            <timezone>GMT +1</timezone>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <distribution>MIT</distribution>
+            <name>MIT Distribution</name>
+        </license>
+    </licenses>
+
     <build>
         <plugins>
             <plugin>
