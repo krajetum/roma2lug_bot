@@ -7,7 +7,7 @@ There are some missing files that you shall provide to this code to work.
 - ### client_id.json
   Is the key to access gmail account.
   You can make and download it from the Google Api Console.
-  You have to put this file under ``` src/resources ``` .
+  You have to put this file under ``` /config/client_id.json ``` .
   
 - ### properties.properties 
 
