@@ -24,8 +24,17 @@
         <processorPath useClasspath="true" />
         <module name="roma2lug_bot" />
       </profile>
+      <profile default="false" name="Annotation profile for roma2bot" enabled="true">
+        <sourceOutputDir name="target\generated-sources\annotations" />
+        <sourceTestOutputDir name="target\generated-test-sources\test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="roma2bot" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="roma2bir" target="1.8" />
+      <module name="roma2bot" target="1.8" />
       <module name="roma2lug_bot" target="1.8" />
     </bytecodeTargetLevel>
   </component>

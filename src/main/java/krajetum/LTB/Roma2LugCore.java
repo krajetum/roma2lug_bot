@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.gson.Gson;
@@ -17,12 +18,17 @@ import krajetum.LTB.objects.LUGMember;
 import krajetum.LTB.objects.SpamCommand;
 import org.mortbay.log.Log;
 import pro.zackpollard.telegrambot.api.TelegramBot;
+import pro.zackpollard.telegrambot.api.chat.message.ReplyMarkupType;
 import pro.zackpollard.telegrambot.api.chat.message.send.*;
 
 import pro.zackpollard.telegrambot.api.event.Listener;
+import pro.zackpollard.telegrambot.api.event.chat.CallbackQueryReceivedEvent;
 import pro.zackpollard.telegrambot.api.event.chat.ParticipantJoinGroupChatEvent;
+import pro.zackpollard.telegrambot.api.event.chat.inline.InlineCallbackQueryReceivedEvent;
 import pro.zackpollard.telegrambot.api.event.chat.message.CommandMessageReceivedEvent;
-
+import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardButton;
+import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardMarkup;
+import pro.zackpollard.telegrambot.api.keyboards.Keyboard;
 
 
 public class Roma2LugCore implements Listener {
@@ -142,6 +148,17 @@ public class Roma2LugCore implements Listener {
         }else if(event.getCommand().equals("about")){
             SendableTextMessage message = SendableTextMessage.builder().message("Get this project on: https://krajetum.github.io/roma2lug_bot/").parseMode(ParseMode.HTML).build();
             event.getChat().sendMessage(message);
+        }else if(event.getCommand().equals("test")){
+            InlineKeyboardMarkup markup =  InlineKeyboardMarkup.builder().addRow(InlineKeyboardButton.builder().text("text").url("https://www.google.com").callbackData(UUID.randomUUID().toString()).build()).build();
+            SendableTextMessage textMessage = SendableTextMessage.builder().replyMarkup(markup).message("TEST KEYBOARD").build();
+            event.getChat().sendMessage(textMessage);
         }
     }
+
+    @Override
+    public void onCallbackQueryReceivedEvent(CallbackQueryReceivedEvent event) {
+        event.getCallbackQuery().answer("MINCHIA VOI "+event.getCallbackQuery().getFrom().getFirstName()+" EH? SONO ANCORA IN FASE DI SVILUPPO OK?", false);
+    }
+
+
 }

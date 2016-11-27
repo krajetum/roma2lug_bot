@@ -22,13 +22,18 @@ import java.io.*;
 
 import krajetum.LTB.configs.BotConfig;
 import krajetum.LTB.configs.MIMEType;
+import krajetum.LTB.utils.GoogleServices;
 import krajetum.LTB.utils.MailHTMLParser;
 import krajetum.LTB.utils.TelegramAssistanceUtil;
 import org.apache.commons.io.FileUtils;
+import org.mortbay.log.Log;
 import pro.zackpollard.telegrambot.api.TelegramBot;
 import pro.zackpollard.telegrambot.api.chat.message.send.InputFile;
 import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
 import pro.zackpollard.telegrambot.api.chat.message.send.SendableStickerMessage;
+import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardButton;
+import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardMarkup;
+import pro.zackpollard.telegrambot.api.keyboards.KeyboardButton;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -41,81 +46,19 @@ public class AssistanceCore {
 
     TelegramBot telegramBot;
 
-    private static final String APPLICATION_NAME = "LTB";
-
-    private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/LTB_Credentials");
-
-    private static FileDataStoreFactory DATA_STORE_FACTORY;
-
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-
-    private static HttpTransport HTTP_TRANSPORT;
-
-    /** Global instance of the scopes required by this quickstart.
-     *
-     * If modifying these scopes, delete your previously saved credentials
-     * at ~/.credentials/gmail-java-quickstart
-     */
-    private static final List<String> SCOPES = Arrays.asList(GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY, CalendarScopes.CALENDAR);
-    public AssistanceCore(TelegramBot bot){
-        this.telegramBot = bot;
+    AssistanceCore(TelegramBot telegramBot){
+        this.telegramBot = telegramBot;
     }
 
-    static {
-        try {
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
-        }
+    private void birthday(){
+
     }
 
-    /**
-     * Creates an authorized Credential object.
-     * @return an authorized Credential object.
-     * @throws IOException
-     */
-    public static Credential authorize() throws IOException {
-        // Load client secrets.
-        InputStream in = AssistanceCore.class.getResourceAsStream("/client_id.json");
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(DATA_STORE_FACTORY)
-                .setAccessType("offline")
-                .build();
-        Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-        //System.out.println("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
-        return credential;
-    }
-
-    /**
-     * Build and return an authorized Gmail client service.
-     * @return an authorized Gmail client service
-     * @throws IOException
-     */
-    public static Gmail getGmailService() throws IOException {
-        Credential credential = authorize();
-        return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
-    }
-
-    /**
-     * Build and return an authorized Calendar client service.
-     * @return an authorized Calendar client service
-     * @throws IOException
-     */
-    public static Calendar getCalendarService() throws IOException {
-        Credential credential = authorize();
-        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
-    }
-
-    public void checkMail() throws IOException{
+    private void checkMail() throws IOException{
         // Build a new authorized API client service.
-        Gmail service = getGmailService();
-        Calendar calendar = getCalendarService();
+        Gmail service = GoogleServices.getGmailService();
+        Calendar calendar = GoogleServices.getCalendarService();
 
 
         // Print the labels in the user's account.
@@ -183,19 +126,19 @@ public class AssistanceCore {
                     util.setBody(builder.toString());
 
 
-                    telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_TEST_ID), util.toTelegramMessage(ParseMode.MARKDOWN));
+                    telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_ID), util.toTelegramMessage(ParseMode.MARKDOWN));
                     //Logger.getLogger(AssistanceCore.class.getName()).log(Level.INFO, part.toPrettyString());
                     if(tmpStrings.size()>0){
                         for(int i =0; i<tmpStrings.size();i++) {
                             SendableStickerMessage sendableStickerMessage = SendableStickerMessage.builder().sticker(new InputFile(new File(tmpStrings.get(i)))).build();
-                            telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_TEST_ID), sendableStickerMessage);
+                            telegramBot.sendMessage(telegramBot.getChat(BotConfig.BOT_LUG_GROUP_ID), sendableStickerMessage);
                             File file = new File(tmpStrings.get(i));
                             file.delete();
                         }
                     }
                     
                     ModifyMessageRequest request = new ModifyMessageRequest();
-                    request.setRemoveLabelIds(Arrays.asList("UNREAD"));
+                    request.setRemoveLabelIds(Collections.singletonList("UNREAD"));
                     service.users().messages().modify("me", op.getId(), request).execute();
                 }
                 map.clear();
@@ -207,18 +150,16 @@ public class AssistanceCore {
     public synchronized void runDaemon() {
         
         boolean once = false;
-        //noinspection InfEiniteLoopStatement
+        //noinspection InfiniteLoopStatement
         while(true) {
-            
             try {
                 checkMail();
                 //60000 1 min
                 //600000 10 min
                 //636000 15 min
-                /*TODO: DA DECIDERE IL REFRESH RATE */
                 if(!once){
-                    System.out.println("Daemon Initialization finished");
-                    System.out.println("Bot Init ended");
+                    Log.info("Daemon Initialization finished");
+                    Log.info("Bot Init ended");
                     once = true;
                 }
                 wait(60000);
@@ -228,11 +169,14 @@ public class AssistanceCore {
                 Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Host non raggiungible");
             }catch (SocketTimeoutException e){
                 Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Connection Timeout");
-            } catch (IOException ex) {
-                Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Connessione Saltata. Stacca, Stacca ci Stanno tracciando");
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("File client_id.json not found");
+                System.out.println("See the wiki of the project to get some clue");
+                System.exit(-1);
             }
-  
-            
+
+
         }
     }
 }
